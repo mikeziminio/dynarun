@@ -1,0 +1,6 @@
+# bin
+bin/*
+!bin/.gitkeep
+
+# os
+.DS_Store

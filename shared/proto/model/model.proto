@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package model;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "./shared/proto/model";
+
+// Полная информация о модели (как в БД)
+message ModelInfo {
+  string id = 1;
+  string name = 2;
+  string repo_id = 3;
+  string filename = 4;
+  int64 input_token_price = 5;
+  int64 output_token_price = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message ModelItems {
+  repeated ModelInfo models = 1;
+}
+
+// CreateModel — создание модели
+message CreateModelRequest {
+  string name = 1;
+  string repo_id = 2;
+  string filename = 3;
+  int64 input_token_price = 4;
+  int64 output_token_price = 5;
+}
+
+// UpdateModel — обновление модели (все optional)
+message UpdateModelRequest {
+  string id = 1;
+  optional string name = 2;
+  optional string repo_id = 3;
+  optional string filename = 4;
+  optional int64 input_token_price = 5;
+  optional int64 output_token_price = 6;
+}
+
+// DeleteModel — удаление по uuid
+message DeleteModelRequest {
+  string id = 1;
+}
+
+service ModelService {
+  rpc CreateModel(CreateModelRequest) returns (ModelInfo);
+  rpc UpdateModel(UpdateModelRequest) returns (ModelInfo);
+  rpc DeleteModel(DeleteModelRequest) returns (google.protobuf.Empty);
+  rpc ListModel(google.protobuf.Empty) returns (ModelItems);
+}

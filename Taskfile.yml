@@ -1,0 +1,19 @@
+version: '3'
+
+tasks:
+
+  build:
+    desc: Build the binary
+    cmds:
+      - go build -o ./bin/server ./server/cmd/server
+      # - GOOS=linux go build -o ./bin/linux/server ./server/cmd/server
+
+  buf-lint:
+    desc: Run buf lint on protobuf files
+    cmds:
+      - buf lint ./shared/proto
+
+  protoc:
+    desc: Generate protobuf Go files in each microservice
+    cmds:
+      - protoc -I=./shared/proto/model/ --go_out=. --go-grpc_out=. model.proto
