@@ -5,9 +5,9 @@ import (
 )
 
 type Model struct {
-	Id               ID
+	ID               ID
 	Name             string
-	RepoId           string
+	RepoID           string
 	Filename         string
 	InputTokenPrice  int64
 	OutputTokenPrice int64

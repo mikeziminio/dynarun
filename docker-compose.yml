@@ -1,0 +1,26 @@
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: dynarun_postgres
+    environment:
+      - POSTGRES_USER=dynarun
+      - POSTGRES_PASSWORD=dynarun
+      - POSTGRES_DB=dynarun
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: always
+
+  # server:
+  #   image: alpine:latest
+  #   container_name: dynarun_server
+  #   volumes:
+  #     - ./bin/linux/server:/usr/bin/server:ro
+  #   command: tail -f /dev/null
+  #     - server \
+  #       --postgres-dsn postgresql://dynarun:dynarun@postgres:5432/dynarun?sslmode=disable \
+
+volumes:
+  postgres-data:

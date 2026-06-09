@@ -2,6 +2,10 @@ version: '3'
 
 tasks:
 
+  default:
+    cmds:
+      - task --list
+
   build:
     desc: Build the binary
     cmds:
@@ -17,3 +21,23 @@ tasks:
     desc: Generate protobuf Go files in each microservice
     cmds:
       - protoc -I=./shared/proto/model/ --go_out=. --go-grpc_out=. model.proto
+
+  migrate-create:
+    desc: Create migration -- <name>
+    cmds:
+      - migrate create -dir ./server/migration -ext sql {{.CLI_ARGS}}
+
+  dc-up:
+    desc: docker compose up
+    cmds:
+      - docker compose up -d
+
+  dc-down:
+    desc: docker compose down
+    cmds:
+      - docker compose down --remove-orphans
+
+  psql:
+    desc: psql localhost:5432 dynarun db
+    cmds:
+      - psql postgresql://dynarun:dynarun@127.0.0.1:5432/dynarun

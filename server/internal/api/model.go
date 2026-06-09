@@ -15,6 +15,7 @@ import (
 
 type ModelService interface {
 	CreateModel(
+		ctx context.Context,
 		name string,
 		repoId string,
 		filename string,
@@ -22,6 +23,7 @@ type ModelService interface {
 		outputTokenPrice int64,
 	) (*domain.Model, error)
 	UpdateModel(
+		ctx context.Context,
 		id domain.ID,
 		name *string,
 		repoId *string,
@@ -29,8 +31,8 @@ type ModelService interface {
 		inputTokenPrice *int64,
 		outputTokenPrice *int64,
 	) (*domain.Model, error)
-	DeleteModel(id domain.ID) error
-	ListModel() ([]domain.Model, error)
+	DeleteModel(ctx context.Context, id domain.ID) error
+	ListModel(ctx context.Context) ([]domain.Model, error)
 }
 
 type ModelServer struct {
@@ -51,6 +53,7 @@ func NewModelServer(
 
 func (s *ModelServer) CreateModel(ctx context.Context, req *model.CreateModelRequest) (*model.ModelInfo, error) {
 	m, err := s.modelService.CreateModel(
+		ctx,
 		req.Name,
 		req.RepoId,
 		req.Filename,
@@ -61,9 +64,9 @@ func (s *ModelServer) CreateModel(ctx context.Context, req *model.CreateModelReq
 		return nil, status.Error(codes.Internal, fmt.Sprintf("%v", err))
 	}
 	return &model.ModelInfo{
-		Id:               m.Id.String(),
+		Id:               m.ID.String(),
 		Name:             m.Name,
-		RepoId:           m.RepoId,
+		RepoId:           m.RepoID,
 		Filename:         m.Filename,
 		InputTokenPrice:  m.InputTokenPrice,
 		OutputTokenPrice: m.OutputTokenPrice,
@@ -77,6 +80,7 @@ func (s *ModelServer) UpdateModel(ctx context.Context, req *model.UpdateModelReq
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("failed to parse id: %v", err))
 	}
 	m, err := s.modelService.UpdateModel(
+		ctx,
 		id,
 		req.Name,
 		req.RepoId,
@@ -88,9 +92,9 @@ func (s *ModelServer) UpdateModel(ctx context.Context, req *model.UpdateModelReq
 		return nil, status.Error(codes.Internal, fmt.Sprintf("%v", err))
 	}
 	return &model.ModelInfo{
-		Id:               m.Id.String(),
+		Id:               m.ID.String(),
 		Name:             m.Name,
-		RepoId:           m.RepoId,
+		RepoId:           m.RepoID,
 		Filename:         m.Filename,
 		InputTokenPrice:  m.InputTokenPrice,
 		OutputTokenPrice: m.OutputTokenPrice,
@@ -103,23 +107,23 @@ func (s *ModelServer) DeleteModel(ctx context.Context, req *model.DeleteModelReq
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, fmt.Sprintf("failed to parse id: %v", err))
 	}
-	err = s.modelService.DeleteModel(id)
+	err = s.modelService.DeleteModel(ctx, id)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("%v", err))
 	}
 	return &emptypb.Empty{}, nil
 }
 func (s *ModelServer) ListModel(ctx context.Context, req *emptypb.Empty) (*model.ModelItems, error) {
-	ms, err := s.modelService.ListModel()
+	ms, err := s.modelService.ListModel(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Internal, fmt.Sprintf("%v", err))
 	}
 	modelInfos := make([]*model.ModelInfo, 0)
 	for _, m := range ms {
 		modelInfos = append(modelInfos, &model.ModelInfo{
-			Id:               m.Id.String(),
+			Id:               m.ID.String(),
 			Name:             m.Name,
-			RepoId:           m.RepoId,
+			RepoId:           m.RepoID,
 			Filename:         m.Filename,
 			InputTokenPrice:  m.InputTokenPrice,
 			OutputTokenPrice: m.OutputTokenPrice,

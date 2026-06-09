@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -14,8 +15,18 @@ func main() {
 	logger, _ := zap.NewDevelopment()
 	address := ":8080"
 
+	ctx := context.Background()
+
+	// db pool
+	postgresDSN := "postgresql://dynarun:dynarun@127.0.0.1:5432/dynarun"
+	pool, err := postgres.Connect(ctx, postgresDSN, 10)
+	if err != nil {
+		panic(err)
+	}
+	defer postgres.Close(pool)
+
 	// repos
-	modelRepo, err := postgres.NewModelRepo(logger)
+	modelRepo, err := postgres.NewModelRepo(pool, logger)
 	if err != nil {
 		log.Fatalf("failed to init model repo: %v", err)
 	}
